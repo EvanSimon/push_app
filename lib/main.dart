@@ -1,10 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:push_app/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ); // Initialize Firebase
   runApp(MyApp());
 }
 
@@ -27,10 +30,20 @@ class _MyHomePageState extends State<MyHomePage> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   String notificationText = "";
 
+  void setupPushNotifactions() async {
+    final fcm = FirebaseMessaging.instance;
+
+    await fcm.requestPermission();
+
+    final token = await fcm.getToken();
+    print(token);
+  }
+
   @override
   void initState() {
     super.initState();
     _configureFirebaseMessaging();
+    setupPushNotifactions();
   }
 
   void _configureFirebaseMessaging() {
